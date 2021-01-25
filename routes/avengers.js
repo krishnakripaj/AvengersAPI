@@ -8,11 +8,11 @@ let avengerArray = [
   { id: 4, name: "Black Widow" },
 ];
 
-router.get("/api/avengers", (req, res) => {
+router.get("/", (req, res) => {
   return res.send(avengerArray);
 });
 
-router.get("/api/avengers/:id", (req, res) => {
+router.get("/:id", (req, res) => {
   // send avenger details for the requested id
   let requestedID = req.params.id;
   let avenger = avengerArray.find((avenger) => avenger.id == requestedID);
@@ -24,7 +24,7 @@ router.get("/api/avengers/:id", (req, res) => {
   return res.status(200).send(avenger);
 });
 
-router.put("/api/avengers/:id", (req, res) => {
+router.put("/:id", (req, res) => {
   let requestedID = req.params.id;
   let avenger = avengerArray.find((avenger) => avenger.id == requestedID);
   if (!avenger) {
@@ -37,7 +37,7 @@ router.put("/api/avengers/:id", (req, res) => {
   return res.send(avenger);
 });
 
-router.post("/api/avengers", (req, res) => {
+router.post("/", (req, res) => {
   if (!req.body.name) {
     return res
       .status(400)
@@ -52,7 +52,7 @@ router.post("/api/avengers", (req, res) => {
   return res.send(newAvenger);
 });
 
-router.delete("/api/avengers/:id", (req, res) => {
+router.delete("/:id", (req, res) => {
   let avenger = avengerArray.find((b) => b.id == req.params.id);
   if (!avenger) {
     res.status(404).send("The avenger you request does not exist on our MCU");
