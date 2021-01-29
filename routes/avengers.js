@@ -1,4 +1,5 @@
 const express = require("express");
+const Avenger = require("../models/avenger");
 const router = express.Router();
 
 let avengerArray = [
@@ -8,8 +9,13 @@ let avengerArray = [
   { id: 4, name: "Black Widow" },
 ];
 
-router.get("/", (req, res) => {
-  return res.send(avengerArray);
+router.get("/", async (req, res) => {
+  try {
+    let avengers = await Avenger.find().countDocuments();
+    return res.send(avengers.toString());
+  } catch (ex) {
+    return res.status(500).send(ex.message);
+  }
 });
 
 router.get("/:id", (req, res) => {
@@ -24,32 +30,43 @@ router.get("/:id", (req, res) => {
   return res.status(200).send(avenger);
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   let requestedID = req.params.id;
-  let avenger = avengerArray.find((avenger) => avenger.id == requestedID);
+  let avenger = await Avenger.findById(requestedID);
+
   if (!avenger) {
     return res
       .status(404)
       .send("Avenger you are looking to update does not exist on the MCU");
   }
 
-  avenger.name = req.body.name;
+  avenger.set({ likeCount: req.body.likeCount });
+  avenger = await avenger.save();
+
   return res.send(avenger);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   if (!req.body.name) {
     return res
       .status(400)
       .send("Why you no send all the values in the request?");
   }
 
-  let newAvenger = {
-    id: avengerArray.length + 1,
+  let newavenger = new Avenger({
     name: req.body.name,
-  };
-  avengerArray.push(newAvenger);
-  return res.send(newAvenger);
+    birthName: req.body.birthName,
+    movies: req.body.movies,
+    likeCount: req.body.likeCount,
+    imgUrl: req.body.imgUrl,
+    deceased: req.body.deceased,
+  });
+  try {
+    newavenger = await newavenger.save();
+    return res.send(newavenger);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
 });
 
 router.delete("/:id", (req, res) => {

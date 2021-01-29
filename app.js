@@ -1,6 +1,17 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const authentication = require("./middleware/authentication");
 const emailjob = require("./middleware/emailjob");
+
+mongoose
+  .connect("mongodb://localhost/avengersdb", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to db successfully ..."))
+  .catch((err) =>
+    console.log("Error has occurred while connecting to DB :", err)
+  );
 
 const avengers = require("./routes/avengers");
 const home = require("./routes/home");
