@@ -2,17 +2,12 @@ const express = require("express");
 const Avenger = require("../models/avenger");
 const router = express.Router();
 
-let avengerArray = [
-  { id: 1, name: "Iron Man" },
-  { id: 2, name: "Captain America" },
-  { id: 3, name: "Thor" },
-  { id: 4, name: "Black Widow" },
-];
+let avengerArray = [];
 
 router.get("/", async (req, res) => {
   try {
-    let avengers = await Avenger.find().countDocuments();
-    return res.send(avengers.toString());
+    let avengers = await Avenger.find();
+    return res.send(avengers);
   } catch (ex) {
     return res.status(500).send(ex.message);
   }
