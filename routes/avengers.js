@@ -13,16 +13,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", (req, res) => {
-  // send avenger details for the requested id
-  let requestedID = req.params.id;
-  let avenger = avengerArray.find((avenger) => avenger.id == requestedID);
+router.get("/:id", async (req, res) => {
+  let avenger = await Avenger.findById(req.params.id);
   if (!avenger) {
     return res
       .status(404)
-      .send("Avenger you are looking for does not exist on the MCU");
+      .send("The avenger you request does not exist on our MCU");
   }
-  return res.status(200).send(avenger);
+  return res.send(avenger);
 });
 
 router.put("/:id", async (req, res) => {
@@ -64,17 +62,15 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", (req, res) => {
-  let avenger = avengerArray.find((b) => b.id == req.params.id);
-  if (!avenger) {
-    res.status(404).send("The avenger you request does not exist on our MCU");
-    return;
-  }
+router.delete("/:id", async (req, res) => {
+  let avenger = await Avenger.findOneAndDelete({ _id: req.params.id });
+  console.log(avenger);
+  if (!avenger)
+    return res
+      .status(404)
+      .send("The avenger you request does not exist on our MCU");
 
-  let indexOfavenger = avengerArray.indexOf(avenger);
-  avengerArray.splice(indexOfavenger, 1);
-
-  res.send(avenger);
+  return res.send(avenger);
 });
 
 module.exports = router;
