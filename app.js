@@ -9,7 +9,7 @@ const users = require("./routes/users");
 const auth = require("./routes/auth");
 
 mongoose
-  .connect("mongodb://localhost/avengersdb", {
+  .connect("mongodb+srv://root:root@avengers.sqkqn.mongodb.net/avengersdb?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -19,7 +19,7 @@ mongoose
   );
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json()); // uses a express inbuilt middleware to parse JSON
