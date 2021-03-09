@@ -1,8 +1,9 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const Avenger = require("../models/avenger");
 const router = express.Router();
 
-let avengerArray = [];
+const SECRET_KEY = "1234567";
 
 router.get("/", async (req, res) => {
   try {
@@ -40,6 +41,16 @@ router.put("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  const token = req.header("x-jwt-token");
+  if (!token) 
+    return res.status(401).send("Access denied. No token");
+
+  try{
+    jwt.verify(token, SECRET_KEY);
+  } catch(e) {
+    return res.status(400).send("Invalid token");
+  }
+
   if (!req.body.name) {
     return res
       .status(400)
@@ -63,6 +74,21 @@ router.post("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  const token = req.header("x-jwt-token");
+  if (!token) 
+    return res.status(401).send("Access denied. No token");
+
+  try{
+    jwt.verify(token, SECRET_KEY);
+  } catch(e) {
+    return res.status(400).send("Invalid token");
+  }
+
+  let decoded = jwt.decode(token, SECRET_KEY);
+  if (!decoded.isAdmin) {
+    return res.status(403).send("Forbidden - No authorization");s
+  }
+
   let avenger = await Avenger.findOneAndDelete({ _id: req.params.id });
   console.log(avenger);
   if (!avenger)
